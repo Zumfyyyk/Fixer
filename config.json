@@ -1,0 +1,10 @@
+{
+    "theme": "dark",
+    "language": "ru",
+    "notifications": true,
+    "sound": true,
+    "start_minimized": false,
+    "checkUpdatesOnStart": false,
+    "tray": false,
+    "autorun": false
+}

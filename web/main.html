@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Fixer by Zumfyyyk</title>
+		<link rel="stylesheet" href="css/main.css" />
+		<link rel="icon" href="/images/favicon.ico" />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+		/>
+	</head>
+	<body>
+		<div id="animated-bg"></div>
+		<!-- Аудио -->
+		<audio id="splash-audio" src="sounds/splash.mp3" preload="auto"></audio>
+		<audio id="notif-audio" src="sounds/notif.mp3" preload="auto"></audio>
+		<audio id="click-audio" src="sounds/click.wav" preload="auto"></audio>
+
+		<!-- Загрузочный экран -->
+		<div id="splash">
+			<div class="splash-content">
+				<div class="logo-animation">
+					<div class="logo-circle"></div>
+					<div class="logo-icon"><i class="fas fa-bolt"></i></div>
+				</div>
+				<div class="progress-container">
+					<div class="progress-bar" id="splash-progress"></div>
+				</div>
+				<span id="splash-text">Загрузка Fixer...</span>
+				<div class="version">v1.0</div>
+			</div>
+		</div>
+
+		<!-- Уведомление -->
+		<div id="notification">
+			<div class="notification-content">
+				<div class="notification-icon">
+					<i class="fas fa-check-circle success"></i>
+					<i class="fas fa-exclamation-circle error"></i>
+				</div>
+				<div class="notification-message"></div>
+				<button class="notification-close" onclick="hideNotification()">
+					<i class="fas fa-times"></i>
+				</button>
+			</div>
+		</div>
+
+		<!-- Главное приложение -->
+		<div id="app" style="height: 100vh; overflow: auto">
+			<!-- Боковая панель -->
+			<aside>
+				<div class="sidebar-header">
+					<div class="app-logo">
+						<div class="logo-circle"></div>
+						<div class="logo-icon"><i class="fas fa-bolt"></i></div>
+					</div>
+					<h1>FIXER</h1>
+				</div>
+
+				<nav class="sidebar-nav">
+					<button onclick="showTab('home')" id="home-btn">
+						<i class="fas fa-home"></i>
+						<span>Главная</span>
+					</button>
+					<button onclick="showTab('opt')" id="opt-btn">
+						<i class="fas fa-tachometer-alt"></i>
+						<span>Оптимизация</span>
+					</button>
+					<button onclick="showTab('clean')" id="clean-btn">
+						<i class="fas fa-broom"></i>
+						<span>Очистка</span>
+					</button>
+					<button onclick="showTab('monitor')" id="monitor-btn">
+						<i class="fas fa-chart-line"></i>
+						<span>Мониторинг</span>
+					</button>
+					<button onclick="showTab('startup')" id="startup-btn">
+						<i class="fas fa-rocket"></i>
+						<span>Автозагрузка</span>
+					</button>
+					<button onclick="showTab('settings')" id="settings-btn">
+						<i class="fas fa-cog"></i>
+						<span>Настройки</span>
+					</button>
+				</nav>
+
+				<div class="sidebar-footer">
+					<div class="system-status">
+						<div class="status-item">
+							<span>CPU:</span>
+							<div class="status-value" id="sidebar-cpu">0%</div>
+						</div>
+						<div class="status-item">
+							<span>RAM:</span>
+							<div class="status-value" id="sidebar-ram">0%</div>
+						</div>
+					</div>
+					<div class="language-selector">
+						<select id="language-select" onchange="changeLanguage(this.value)">
+							<option value="ru">Русский</option>
+							<option value="en">English</option>
+							<option value="de">Deutsch</option>
+						</select>
+					</div>
+				</div>
+			</aside>
+
+			<!-- Основное содержимое -->
+			<main style="overflow-y: auto; max-height: 100vh">
+				<!-- Главная -->
+				<section id="home" class="tab">
+					<div class="tab-header">
+						<h2><i class="fas fa-home"></i> Главная</h2>
+						<button class="quick-action" onclick="quickClean()">
+							<i class="fas fa-magic"></i> Быстрая оптимизация
+						</button>
+					</div>
+
+					<div class="welcome-container">
+						<div class="welcome-card">
+							<div class="welcome-logo">
+								<div class="logo-circle"></div>
+								<div class="logo-icon"><i class="fas fa-bolt"></i></div>
+							</div>
+							<h3>Добро пожаловать в Fixer!</h3>
+							<p>
+								Мощный инструмент для оптимизации и мониторинга вашей системы
+							</p>
+						</div>
+
+						<div class="stats-grid">
+							<div class="stat-card">
+								<div class="stat-icon cpu">
+									<i class="fas fa-microchip"></i>
+								</div>
+								<div class="stat-info">
+									<h4>Процессор</h4>
+									<div class="stat-value" id="home-cpu">0%</div>
+								</div>
+							</div>
+
+							<div class="stat-card">
+								<div class="stat-icon ram">
+									<i class="fas fa-memory"></i>
+								</div>
+								<div class="stat-info">
+									<h4>Память</h4>
+									<div class="stat-value" id="home-ram">0%</div>
+								</div>
+							</div>
+
+							<div class="stat-card">
+								<div class="stat-icon disk">
+									<i class="fas fa-hdd"></i>
+								</div>
+								<div class="stat-info">
+									<h4>Диск C:</h4>
+									<div class="stat-value" id="home-disk">0%</div>
+								</div>
+							</div>
+
+							<div class="stat-card">
+								<div class="stat-icon temp">
+									<i class="fas fa-thermometer-half"></i>
+								</div>
+								<div class="stat-info">
+									<h4>Температура</h4>
+									<div class="stat-value" id="home-temp">0°C</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="quick-actions">
+							<h4>Быстрые действия</h4>
+							<div class="actions-grid">
+								<button class="action-btn" onclick="showTab('clean')">
+									<i class="fas fa-broom"></i>
+									<span>Очистка системы</span>
+								</button>
+								<button class="action-btn" onclick="showTab('opt')">
+									<i class="fas fa-tachometer-alt"></i>
+									<span>Оптимизация</span>
+								</button>
+								<button class="action-btn" onclick="showTab('startup')">
+									<i class="fas fa-rocket"></i>
+									<span>Автозагрузка</span>
+								</button>
+								<button class="action-btn" onclick="checkUpdates()">
+									<i class="fas fa-sync-alt"></i>
+									<span>Проверить обновления</span>
+								</button>
+							</div>
+						</div>
+
+						<div class="system-info">
+							<h4>Информация о системе</h4>
+							<div class="info-grid" id="system-info">
+								<!-- Заполнится через JS -->
+								<!-- Модель процессора будет отображаться здесь через JS -->
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<!-- Оптимизация -->
+				<section id="opt" class="tab hidden">
+					<div class="tab-header">
+						<h2><i class="fas fa-tachometer-alt"></i> Оптимизация</h2>
+						<button class="quick-action" onclick="applyOptimizations()">
+							<i class="fas fa-magic"></i> Применить все рекомендации
+						</button>
+					</div>
+
+					<div class="optimization-container">
+						<div class="optimization-section">
+							<h3><i class="fas fa-cogs"></i> Ключевые службы Windows</h3>
+							<div class="optimization-list" id="services-list">
+								<!-- Заполнится через JS -->
+							</div>
+						</div>
+
+						<div class="optimization-section">
+							<h3><i class="fas fa-shield-alt"></i> Безопасность</h3>
+							<div class="optimization-item">
+								<div class="optimization-info">
+									<h4>Брандмауэр Windows</h4>
+									<p>Включение/выключение брандмауэра Windows</p>
+								</div>
+								<label class="switch">
+									<input
+										type="checkbox"
+										id="firewall-toggle"
+										onchange="toggleFirewall(this.checked)"
+									/>
+									<span class="slider"></span>
+								</label>
+								<!-- Индикатор состояния -->
+								<span
+									id="firewall-status"
+									style="
+										margin-left: 10px;
+										font-size: 13px;
+										color: var(--text-secondary);
+									"
+								></span>
+							</div>
+						</div>
+
+						<div class="optimization-section">
+							<h3><i class="fas fa-power-off"></i> Электропитание</h3>
+							<div class="optimization-item">
+								<div class="optimization-info">
+									<h4>Режим высокой производительности</h4>
+									<p>
+										Установить схему электропитания на максимальную
+										производительность
+									</p>
+								</div>
+								<button class="btn-optimize" onclick="setHighPerformance()">
+									Применить
+								</button>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<!-- Очистка -->
+				<section id="clean" class="tab hidden">
+					<div class="tab-header">
+						<h2><i class="fas fa-broom"></i> Очистка</h2>
+						<button class="quick-action" onclick="quickClean()">
+							<i class="fas fa-magic"></i> Быстрая очистка
+						</button>
+					</div>
+
+					<div class="clean-container">
+						<div class="clean-section">
+							<h3>
+								<i class="fas fa-trash-alt"></i>
+								<span data-locale="cacheCleaning">Очистка кэша</span>
+							</h3>
+							<div class="clean-list" id="cache-list">
+								<!-- Заполнится через JS -->
+							</div>
+						</div>
+
+						<div class="clean-section">
+							<h3><i class="fas fa-hdd"></i> Очистка диска</h3>
+							<div class="clean-item">
+								<div class="clean-info">
+									<h4>Временные файлы</h4>
+									<p>Очистка папки Temp и временных файлов системы</p>
+									<div class="clean-details" id="temp-size">Размер: 0 MB</div>
+								</div>
+								<button class="btn-clean" onclick="clearCache('Temp')">
+									Очистить
+								</button>
+							</div>
+
+							<div class="clean-item">
+								<div class="clean-info">
+									<h4>Корзина</h4>
+									<p>Полная очистка корзины</p>
+								</div>
+								<button class="btn-clean" onclick="emptyRecycleBin()">
+									Очистить
+								</button>
+							</div>
+						</div>
+
+						<div class="clean-results hidden" id="clean-results">
+							<h4><i class="fas fa-check-circle"></i> Результаты очистки</h4>
+							<div class="results-content" id="clean-results-content"></div>
+						</div>
+					</div>
+				</section>
+
+				<!-- Мониторинг -->
+				<section id="monitor" class="tab hidden">
+					<div class="tab-header">
+						<h2><i class="fas fa-chart-line"></i> Мониторинг</h2>
+						<div class="monitor-time">
+							<span id="monitor-time">--:--:--</span>
+						</div>
+					</div>
+
+					<div class="monitor-container">
+						<div class="monitor-section">
+							<h3><i class="fas fa-microchip"></i> Процессор</h3>
+							<div class="monitor-grid">
+								<div class="monitor-card big">
+									<div class="gauge-container">
+										<div class="gauge-title">Использование CPU</div>
+										<canvas
+											id="cpu-gauge-canvas"
+											width="120"
+											height="120"
+											style="display: block; margin: auto"
+										></canvas>
+										<div
+											class="gauge-cover"
+											id="cpu-value"
+											style="
+												position: absolute;
+												top: 50%;
+												left: 50%;
+												transform: translate(-50%, -50%);
+												font-size: 24px;
+												font-weight: 700;
+											"
+										>
+											0%
+										</div>
+									</div>
+									<!-- Модель процессора -->
+									<div
+										class="cpu-model"
+										id="cpu-model-monitor"
+										style="
+											margin-top: 10px;
+											color: var(--text-secondary);
+											font-size: 14px;
+											text-align: center;
+										"
+									></div>
+								</div>
+
+								<div class="monitor-card">
+									<div class="monitor-stat">
+										<div class="stat-title">Ядра/Потоки</div>
+										<div class="stat-value" id="cpu-cores">0/0</div>
+									</div>
+								</div>
+
+								<div class="monitor-card">
+									<div class="monitor-stat">
+										<div class="stat-title">Частота</div>
+										<div class="stat-value" id="cpu-freq">0 MHz</div>
+									</div>
+								</div>
+
+								<div class="monitor-card">
+									<div class="monitor-stat">
+										<div class="stat-title">Температура</div>
+										<div class="stat-value" id="cpu-temp">0°C</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="monitor-section">
+							<h3><i class="fas fa-memory"></i> Память</h3>
+							<div class="monitor-grid">
+								<div class="monitor-card big">
+									<div class="gauge-container">
+										<div class="gauge-title">Использование RAM</div>
+										<canvas
+											id="ram-gauge-canvas"
+											width="120"
+											height="120"
+											style="display: block; margin: auto"
+										></canvas>
+										<div
+											class="gauge-cover"
+											id="ram-value"
+											style="
+												position: absolute;
+												top: 50%;
+												left: 50%;
+												transform: translate(-50%, -50%);
+												font-size: 24px;
+												font-weight: 700;
+											"
+										>
+											0%
+										</div>
+									</div>
+								</div>
+
+								<div class="monitor-card">
+									<div class="monitor-stat">
+										<div class="stat-title">Всего</div>
+										<div class="stat-value" id="ram-total">0 GB</div>
+									</div>
+								</div>
+
+								<div class="monitor-card">
+									<div class="monitor-stat">
+										<div class="stat-title">Использовано</div>
+										<div class="stat-value" id="ram-used">0 GB</div>
+									</div>
+								</div>
+
+								<div class="monitor-card">
+									<div class="monitor-stat">
+										<div class="stat-title">Доступно</div>
+										<div class="stat-value" id="ram-free">0 GB</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="monitor-section">
+							<h3><i class="fas fa-hdd"></i> Диски</h3>
+							<div class="disks-container" id="disks-container">
+								<!-- Заполнится через JS -->
+							</div>
+						</div>
+
+						<div class="monitor-section">
+							<h3><i class="fas fa-network-wired"></i> Сеть</h3>
+							<div class="monitor-grid">
+								<div class="monitor-card">
+									<div class="monitor-stat">
+										<div class="stat-title">Отправлено</div>
+										<div class="stat-value" id="net-sent">0 MB</div>
+									</div>
+								</div>
+
+								<div class="monitor-card">
+									<div class="monitor-stat">
+										<div class="stat-title">Получено</div>
+										<div class="stat-value" id="net-recv">0 MB</div>
+									</div>
+								</div>
+
+								<div class="monitor-card">
+									<div class="monitor-stat">
+										<div class="stat-title">Скорость ↑</div>
+										<div class="stat-value" id="net-speed-up">0 KB/s</div>
+									</div>
+								</div>
+
+								<div class="monitor-card">
+									<div class="monitor-stat">
+										<div class="stat-title">Скорость ↓</div>
+										<div class="stat-value" id="net-speed-down">0 KB/s</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+
+				<!-- Автозагрузка -->
+				<section id="startup" class="tab hidden">
+					<div class="tab-header">
+						<h2><i class="fas fa-rocket"></i> Автозагрузка</h2>
+						<button class="quick-action" onclick="refreshStartup()">
+							<i class="fas fa-sync-alt"></i> Обновить список
+						</button>
+					</div>
+
+					<div class="startup-container">
+						<div class="startup-controls">
+							<div class="search-box">
+								<i class="fas fa-search"></i>
+								<input
+									type="text"
+									id="startup-search"
+									placeholder="Поиск программ..."
+									oninput="filterStartup()"
+								/>
+							</div>
+							<div class="startup-stats">
+								<span id="startup-count">0 программ</span>
+								<span id="startup-enabled">0 включено</span>
+							</div>
+						</div>
+
+						<div class="startup-list" id="startup-list">
+							<!-- Заполнится через JS -->
+						</div>
+					</div>
+				</section>
+
+				<!-- Настройки -->
+				<section id="settings" class="tab hidden">
+					<div class="tab-header">
+						<h2 data-locale="settings"><i class="fas fa-cog"></i> Настройки</h2>
+					</div>
+
+					<div class="settings-container">
+						<div class="settings-section">
+							<h3>
+								<i class="fas fa-paint-brush"></i>
+								<span data-locale="appearance">Внешний вид</span>
+							</h3>
+							<div class="setting-item">
+								<div class="setting-info">
+									<h4 data-locale="theme">Тема</h4>
+									<p data-locale="chooseTheme">Выберите тему приложения</p>
+								</div>
+								<select id="theme-select" onchange="toggleTheme(this.value)">
+									<option value="dark" data-locale="darkTheme">Тёмная</option>
+									<option value="light" data-locale="lightTheme">
+										Светлая
+									</option>
+									<option value="rgb" data-locale="rgbTheme">RGB</option>
+								</select>
+							</div>
+						</div>
+
+						<div class="settings-section">
+							<h3><i class="fas fa-bell"></i> Уведомления</h3>
+							<div class="setting-item">
+								<div class="setting-info">
+									<h4>Показывать уведомления</h4>
+									<p>Включить или выключить системные уведомления</p>
+								</div>
+								<label class="switch">
+									<input
+										type="checkbox"
+										id="notifications-toggle"
+										onchange="updateNotificationsSetting(this.checked)"
+									/>
+									<span class="slider"></span>
+								</label>
+							</div>
+
+							<div class="setting-item">
+								<div class="setting-info">
+									<h4>Звук уведомлений</h4>
+									<p>Воспроизводить звук при уведомлениях</p>
+								</div>
+								<label class="switch">
+									<input
+										type="checkbox"
+										id="sound-toggle"
+										onchange="updateSoundSetting(this.checked)"
+									/>
+									<span class="slider"></span>
+								</label>
+							</div>
+						</div>
+
+						<div class="settings-section">
+							<h3><i class="fas fa-cogs"></i> Система</h3>
+							<div class="setting-item">
+								<div class="setting-info">
+									<h4>Добавить в трей</h4>
+									<p>Сворачивать приложение в системный трей</p>
+								</div>
+								<label class="switch">
+									<input
+										type="checkbox"
+										id="tray-toggle"
+										onchange="updateTraySetting(this.checked)"
+									/>
+									<span class="slider"></span>
+								</label>
+							</div>
+							<div class="setting-item">
+								<div class="setting-info">
+									<h4>Запускать вместе с Windows</h4>
+									<p>Автоматически запускать Fixer при старте системы</p>
+								</div>
+								<label class="switch">
+									<input
+										type="checkbox"
+										id="autorun-toggle"
+										onchange="updateAutorunSetting(this.checked)"
+									/>
+									<span class="slider"></span>
+								</label>
+							</div>
+						</div>
+
+						<div class="settings-section">
+							<h3><i class="fas fa-info-circle"></i> О программе</h3>
+							<div class="about-card">
+								<div class="about-logo">
+									<div class="logo-circle"></div>
+									<div class="logo-icon"><i class="fas fa-bolt"></i></div>
+								</div>
+								<div class="about-info">
+									<h4>Fixer by Zumfyyyk</h4>
+									<p>Версия: <span id="app-version">1.0</span></p>
+									<p>Оптимизация и мониторинг системы</p>
+									<button class="btn-check-update" onclick="checkUpdates(true)">
+										Проверить обновления
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</section>
+			</main>
+		</div>
+
+		<!-- Модальные окна -->
+		<div id="modal" class="modal hidden">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h3 id="modal-title">Заголовок</h3>
+					<button class="modal-close" onclick="closeModal()">
+						<i class="fas fa-times"></i>
+					</button>
+				</div>
+				<div class="modal-body" id="modal-body">Содержимое модального окна</div>
+				<div class="modal-footer">
+					<button class="btn-cancel" onclick="closeModal()">Отмена</button>
+					<button
+						class="btn-confirm"
+						id="modal-confirm"
+						onclick="confirmModal()"
+					>
+						Подтвердить
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<script src="../eel.js"></script>
+		<script src="js/main.js"></script>
+	</body>
+</html>
